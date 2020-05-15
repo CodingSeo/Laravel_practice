@@ -24,3 +24,36 @@ Route::get('/', 'WelcomeController@index');
 // );
 
 Route::resource('articles', 'ArticlesController');
+
+Route::get('auth/login', function(){
+	$credentials=[
+		'email' =>'test@test.com',
+		'password' => '1234'
+	];
+	if(!auth()->attempt($credentials)){
+		return 'login info error';
+	}
+	return redirect('protected');
+});
+
+// Route::get('protected',function(){
+// 	dump(session()->all());
+// 	if(!auth()->check()){
+// 		return 'who are you?';
+// 	}
+// 	return 'welcome '. auth()->user()->name;
+// });
+Route::get('protected',['middleware'=>'auth',function(){
+	dump(session()->all());
+	return 'welcome '. auth()->user()->name;
+}]);
+
+Route::get('auth/logout',function(){
+	auth()->logout();
+	return 'see ya';
+});
+
+
+Auth::routes();
+Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/password/reset','Auth\ForgotPasswordController@showLinkRequestForm');
